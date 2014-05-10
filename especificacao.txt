@@ -1,0 +1,84 @@
+ CI316 - Trabalho Prático - 20141
+Trabalho Prático de CI316
+
+
+O trabalho consiste na implementação em linguagem C ou C++, com OpenMP, de uma solução para uma Equação Diferencial Parcial, resolvendo o Sistema Linear resultante pelo Método de Jacobi e Red-Black Gauss-Seidel.
+
+Especificação Inicial
+Execução do Programa
+
+O pacote de software a ser construído deve gerar o executável chamado rbgs, que deve ser executado da seguinte forma:
+
+./rgbs nx ny t c [j|g]
+
+Onde:
+
+    nx, ny: número de intervalos na grade de discretização nas direções X e Y, respectivamente;
+    t: número de threads a serem utilizadas;
+    c: número de iterações a serem executadas;
+    j | g: utilizar o método de Jacobi (j) ou red-black Gaussian (g).
+
+O programa deve gerar um arquivo chamado solution.txt, no formato aceito pelo programa gnuplot, com a solução da função.
+
+O programa também deve imprimir na saída padrão o tempo de execução do método (em segundos) e o valor do resíduo.
+
+O programa deve ser compilado com um Makefile, sem erros ou warnings com as seguintes opções:
+
+-O3 -Wall -Winline -Wshadow -fopenmp
+
+
+Relatório
+
+Você deve gerar um relatório demonstrando a eficiência do programa para o método Red-Black Gaussian executado nos computadores do Lab 1/2.
+
+    Gere gráficos bem explicados demonstrando a eficiência paralela do seu código. A ordenada dos gráficos deve ser a Eficiência Paralela (veja Efficiency) e a abcissa o número de CPUs/threads.
+
+    Efetue 200 iterações (e mostre a média) para cada um dos seguintes tamanhos de grade em X e Y: 32, 33, 1024, 1025, 2048, 2049;
+    Efetue testes com 1, 2, 4 e 6 Threads nas máquinas do Lab 1/2
+
+Descreva os algoritmos e as estruturas de dados utilizadas, as alternativas de implementação consideradas e/ou experimentadas e os motivos que o levaram a optar pela versão entregue, as dificuldades encontradas e as maneiras pelas quais foram contornadas. Dê especial atenção às questões que aumentam a eficiência paralela do seu código, destacando-as.
+
+
+Produto a ser Entregue
+
+O trabalho deve ser desenvolvido por um grupo composto por no máximo DOIS alunos regularmente matriculados na disciplina.
+
+Cada grupo deve entregar um pacote de software completo contendo os fontes em linguagem C/C++. O pacote deve ser arquivado e compactado com tar(1) e gzip(1) em um arquivo chamado login1.tar.gz (se grupo com 1 membro) ou login1-login2.tar.gz (se grupo com 2 membros), onde login1 e login2 são os logins dos alunos que compõem o grupo.
+
+O pacote deve ter a seguinte estrutura de diretório e arquivos:
+
+    ./login1-login2/: diretório principal;
+    ./login1-login2/Relatorio.pdf;
+    ./login1-login2/Makefile;
+
+Note que a extração dos arquivos de login1-login2.tar.gz deve criar o diretório login1-login2 contendo todos os arquivo acima. Os arquivos fonte também devem estar contidos no diretório, ou em algum sub-diretório, desde que o Makefile funcione.
+
+
+Makefile
+O arquivo Makefile deve possuir as regras necessárias para compilar os módulos individualmente e gerar o programa executável. As seguintes regras devem existir OBRIGATORIAMENTE:
+
+    all: compila e produz um executável chamado rgbs no diretório login1-login2/;
+
+    clean: remove todos os arquivos temporários e os arquivos gerados pelo Makefile (*.o, executável, etc.).
+
+
+Entrega
+
+O prazo final para a entrega deste trabalho é dia 25 de maio de 2013, 23:59:59h, IMPRETERIVELMENTE.
+
+    O trabalho deve ser enviado como anexo ao email do professor com o Assunto (Subject): CI316 - Trabalho 1.
+    No corpo da mensagem DEVE CONSTAR OBRIGATORIAMENTE o Nome e Números de Registro Acadêmico (RA) dos membros do grupo;
+    O grupo deverá considerar o trabalho como entregue SOMENTE APÓS RECEBER DO PROFESSOR UMA MENSAGEM DE CONFIRMAÇÃO DE RECEBIMENTO dentro de 24 horas desde o envio da mensagem;
+
+
+Critérios de Avaliação
+
+APENAS OS TRABALHOS QUE FUNCIONAREM SERÃO CORRIGIDOS. Se o trabalho não compilar ou acusar falha de segmentação (Segmentation fault) prematura durante os testes realizados pelo professor (sem que qualquer operação se efetue a contento), trará para o grupo NOTA 0 (ZERO). Também receberão NOTA 0 (ZERO) trabalhos plagiados de qualquer fonte, e/ou com códigos idênticos ou similares. Além disso, apenas trabalhos entregues no prazo marcado receberão nota.
+
+Os itens de avaliação do trabalho e respectivas pontuações são:
+
+    Qualidade da documentação: arquivo Relatorio.pdf (30 pontos)
+    Funcionamento: corretude das respostas nos testes executados (50 pontos)
+    Eficiência paralela: para programas que tenham um bom desempenho paralelo (20 pontos)
+
+Defesa: A defesa do trabalho será oral, e definirá a nota individual de cada membro da equipe, de acordo com seu conhecimento a respeito do trabalho.
