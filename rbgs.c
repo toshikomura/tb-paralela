@@ -133,11 +133,13 @@ malha **Inicia_Grade( const int nx, const int ny, const double hx, const double 
     // Por causa do arredondamento do valor das bordas
     // causado pelos intervalos, foi necessário inserir
     // os valores máximos no braço
+    /*
     for (i = 0; i <= nx; i++)
         Grade[ i][ ny].y = MAX_Y;
 
     for (j = 0; j <= ny; j++)
         Grade[ nx][ j].x = MAX_X;
+    */
 
     return ( Grade);
 }
@@ -186,14 +188,16 @@ double Calcula_Fronteira_Topo( double x) {
 
 
 
-double Calcula_Uxy( malha **Grade, int i, int j, const double hx, const double hy) {
+double Calcula_Uxy( malha **Grade, const int nx, const int ny, int i, int j, const double hx, const double hy) {
 
-    // Verifica se é fronteiras topo
-    if ( Grade[ i][ j].y == MAX_Y)
+   // Verifica se é fronteiras topo
+//    if ( Grade[ i][ j].y == MAX_Y)
+    if ( j == nx)
         return ( Calcula_Fronteira_Topo( Grade[ i][ j].x));
 
     // Verifica se é outras fronteiras
-    if ( Grade[ i][ j].x == MAX_X || Grade[ i][ j].x == 0 || Grade[ i][ j].y == 0 )
+//  if ( Grade[ i][ j].x == MAX_X || Grade[ i][ j].x == 0 || Grade[ i][ j].y == 0 )
+    if ( i == 0 || j == 0 || i == ny)
         return ( (double) 0);
 
     double stencil_Central = (1 / ( 2 / Quadrado( hx) + ( 2 / Quadrado( hy) ))) + Quadrado( K);
@@ -202,6 +206,7 @@ double Calcula_Uxy( malha **Grade, int i, int j, const double hx, const double h
     double stencil_Desloc_Y = (1 / ( 2 / Quadrado( hy))) * ( Grade[ i][ j - 1].valor + Grade[ i][ j + 1].valor);
 
     return ( (double) ( stencil_Central * ( fxy + stencil_Desloc_X + stencil_Desloc_Y)));
+
 }
 
 
@@ -236,12 +241,14 @@ malha **Solucao_SL_Jacobbi( malha **Grade, const int nx, const int ny, const dou
 
     // faz todas as iterações
     for ( n_Iteracao = 1; n_Iteracao <= iteracoes; n_Iteracao++) {
-        // percorre a grade
-        for ( i = 0; i <= nx; i++) {
-            for ( j = 0; j <= ny; j++) {
-                Grade_Solucao[ i][ j].valor = Calcula_Uxy( Grade, i, j, hx, hy);
+
+        #pragma omp parallel for shared( Grade, Grade_Solucao) private( i, j)
+            // percorre a grade
+            for ( i = 0; i <= nx; i++) {
+                for ( j = 0; j <= ny; j++) {
+                    Grade_Solucao[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, hx, hy);
+                }
             }
-        }
 
         //Imprime_Grade( Grade_Solucao, nx, ny);
 
@@ -279,6 +286,7 @@ void Escreve_Grade_Arquivo( malha **Grade_Solucao, const int nx, const int ny) {
 
 int main (int argc, char **argv)
 {
+
     Inicia_Programa();
 
     Checa_Num_Parametros( argc);
@@ -290,6 +298,8 @@ int main (int argc, char **argv)
     const int nthreads = atoi( argv[3]);
     const int iteracoes = atoi( argv[4]);
     const char metodo = *argv[5];
+    int max = nthreads * 3;
+    double start_time, run_time;
 
     Checa_Valor_Parametros( nx, ny, nthreads, iteracoes, metodo);
 
@@ -299,15 +309,17 @@ int main (int argc, char **argv)
 
     //Imprime_Grade( Grade, nx, ny);
 
+    start_time = omp_get_wtime();
+
     malha **Grade_Solucao = Solucao_SL_Jacobbi( Grade, nx, ny, hx, hy, iteracoes);
+
+    run_time = omp_get_wtime() - start_time;
 
     Imprime_Grade( Grade_Solucao, nx, ny);
 
     Escreve_Grade_Arquivo( Grade_Solucao, nx, ny);
 
     omp_set_num_threads(nthreads);
-
-    int max = nthreads * 3;
 
     int i;
     #pragma omp parallel for private(i)
@@ -317,8 +329,9 @@ int main (int argc, char **argv)
             printf("thread %d executando %d total threads %d\n", id, i, omp_get_num_threads());
         }
 
-
     Finaliza_Programa();
+
+    printf("Executou em %lf segundos\n\n", run_time);
 
     return (0);
 
