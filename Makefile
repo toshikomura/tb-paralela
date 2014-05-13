@@ -8,3 +8,4 @@ exec:
 clean:
 	rm -rf rbgs
 	rm -rf *.o
+	rm -rf *.png
