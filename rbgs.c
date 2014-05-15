@@ -232,7 +232,28 @@ void Copia_Grade( malha **Grade_Origem, malha **Grade_Dest, const int nx, const 
 }
 
 
-malha **Solucao_SL_Jacobbi( malha **Grade, const int nx, const int ny, const double hx, const double hy, const int iteracoes ) {
+void Escreve_Grade_Arquivo( malha **Grade_Solucao, const int nx, const int ny) {
+
+    int i, j;
+    FILE *f_Solucao;
+
+    f_Solucao = fopen("solution.txt", "w+");
+
+    fprintf( f_Solucao, "# Plotando solução da equação diferencial parcial\n");
+    fprintf( f_Solucao, "# f(x, y) = 4 * PI^2 * sin( 2 * PI * x) * sinh( 2 * PI * y)\n");
+    fprintf( f_Solucao, "# x      y        valor\n\n");
+
+    for (i = 0; i <= nx; i++) {
+        for (j = 0; j <= ny; j++) {
+            fprintf( f_Solucao, "%f %f %f\n", Grade_Solucao[ i][ j].x, Grade_Solucao[ i][ j].y, Grade_Solucao[ i][ j].valor);
+        }
+    }
+
+    fclose( f_Solucao);
+}
+
+
+malha **Solucao_SL_Jacobbi( malha **Grade, const int nx, const int ny, const int iteracoes, const double hx, const double hy) {
 
     int n_Iteracao;
     malha **Grade_Solucao = Inicia_Grade( nx, ny, hx, hy);
@@ -263,24 +284,97 @@ malha **Solucao_SL_Jacobbi( malha **Grade, const int nx, const int ny, const dou
 }
 
 
-void Escreve_Grade_Arquivo( malha **Grade_Solucao, const int nx, const int ny) {
+malha **Solucao_SL_Red_Black_Gauss_Seidel( malha **Grade, const int nx, const int ny, const int iteracoes, const double hx, const double hy) {
+
+    int n_Iteracao;
 
     int i, j;
-    FILE *f_Solucao;
 
-    f_Solucao = fopen("solution.txt", "w+");
+    // faz todas as iterações
+    for ( n_Iteracao = 1; n_Iteracao <= iteracoes; n_Iteracao++) {
 
-    fprintf( f_Solucao, "# Plotando solução da equação diferencial parcial\n");
-    fprintf( f_Solucao, "# f(x, y) = 4 * PI^2 * sin( 2 * PI * x) * sinh( 2 * PI * y)\n");
-    fprintf( f_Solucao, "# x      y        valor\n\n");
+        #pragma omp parallel for shared( Grade) private( i, j)
+            // percorre a grade Red
+            for ( i = 0; i <= nx; i++) {
+                // se i é par
+                if ( i % 2 == 0) {
+                    for ( j = 0; j <= ny; j = j + 2) {
+                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, hx, hy);
+                    }
+                }
+                else {
+                    for ( j = 1; j <= ny; j = j + 2) {
+                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, hx, hy);
+                    }
+                }
+            }
 
-    for (i = 0; i <= nx; i++) {
-        for (j = 0; j <= ny; j++) {
-            fprintf( f_Solucao, "%f %f %f\n", Grade_Solucao[ i][ j].x, Grade_Solucao[ i][ j].y, Grade_Solucao[ i][ j].valor);
-        }
+        #pragma omp parallel for shared( Grade) private( i, j)
+            // percorre a grade Black
+            for ( i = 0; i <= nx; i++) {
+                // se i é par
+                if ( i % 2 == 0) {
+                    for ( j = 1; j <= ny; j = j + 2) {
+                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, hx, hy);
+                    }
+                }
+                else {
+                    for ( j = 0; j <= ny; j = j + 2) {
+                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, hx, hy);
+                    }
+                }
+            }
+
+        //Imprime_Grade( Grade_Solucao, nx, ny);
     }
 
-    fclose( f_Solucao);
+    return ( Grade);
+
+}
+
+
+void Executa_Metodo_Escolhido(malha **Grade, const int nx, const int ny, const int iteracoes, const double hx, const double hy, const char metodo) {
+
+    double start_time, run_time;
+
+    malha **Grade_Solucao;
+
+    #pragma omp parallel
+    {
+            printf("num threads %d\n", omp_get_num_threads());
+    }
+
+    switch ( metodo) {
+        case 'j' :
+        case 'J' :
+            start_time = omp_get_wtime();
+
+            Grade_Solucao = Solucao_SL_Jacobbi( Grade, nx, ny, iteracoes, hx, hy);
+
+            run_time = omp_get_wtime() - start_time;
+
+            break;
+
+        case 'g' :
+        case 'G' :
+            start_time = omp_get_wtime();
+
+            Grade_Solucao = Solucao_SL_Red_Black_Gauss_Seidel( Grade, nx, ny, iteracoes, hx, hy);
+
+            run_time = omp_get_wtime() - start_time;
+
+            break;
+
+        default :
+            Grade_Solucao = Inicia_Grade( nx, ny, hx, hy);
+    }
+
+    printf("\n\nExecutou em %lf segundos\n\n", run_time);
+
+    //Imprime_Grade( Grade_Solucao, nx, ny);
+
+    Escreve_Grade_Arquivo( Grade_Solucao, nx, ny);
+
 }
 
 
@@ -298,40 +392,20 @@ int main (int argc, char **argv)
     const int nthreads = atoi( argv[3]);
     const int iteracoes = atoi( argv[4]);
     const char metodo = *argv[5];
-    int max = nthreads * 3;
-    double start_time, run_time;
 
     Checa_Valor_Parametros( nx, ny, nthreads, iteracoes, metodo);
 
     Imprime_Parametros(nx, ny, nthreads, iteracoes, metodo);
 
+    omp_set_num_threads(nthreads);
+
     malha **Grade = Inicia_Grade( nx, ny, hx, hy);
 
     //Imprime_Grade( Grade, nx, ny);
 
-    start_time = omp_get_wtime();
-
-    malha **Grade_Solucao = Solucao_SL_Jacobbi( Grade, nx, ny, hx, hy, iteracoes);
-
-    run_time = omp_get_wtime() - start_time;
-
-    Imprime_Grade( Grade_Solucao, nx, ny);
-
-    Escreve_Grade_Arquivo( Grade_Solucao, nx, ny);
-
-    omp_set_num_threads(nthreads);
-
-    int i;
-    #pragma omp parallel for private(i)
-        for (i = 0; i < max; i++)
-        {
-            int id = omp_get_thread_num();
-            printf("thread %d executando %d total threads %d\n", id, i, omp_get_num_threads());
-        }
+    Executa_Metodo_Escolhido( Grade, nx, ny, iteracoes, hx, hy, metodo);
 
     Finaliza_Programa();
-
-    printf("Executou em %lf segundos\n\n", run_time);
 
     return (0);
 
