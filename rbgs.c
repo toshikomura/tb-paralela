@@ -49,7 +49,7 @@ void Executa_Metodo_Escolhido(malha **Grade, const int nx, const int ny, const i
 
     #pragma omp parallel
     {
-            printf("num threads %d\n", omp_get_num_threads());
+            printf("Eu sou a thread nº%d\n", omp_get_thread_num());
     }
 
     switch ( metodo) {
