@@ -43,7 +43,7 @@ int main (int argc, char **argv) {
 
 void Executa_Metodo_Escolhido(malha **Grade, const int nx, const int ny, const int iteracoes, const double hx, const double hy, const char metodo) {
 
-    double start_time, run_time;
+    double start_time, run_time=0;
 
     malha **Grade_Solucao;
 
