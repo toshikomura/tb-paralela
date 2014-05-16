@@ -8,6 +8,39 @@
 #include "io.h"
 #include "matematica.h"
 
+void Executa_Metodo_Escolhido(malha **Grade, const int nx, const int ny, const int iteracoes, const double hx, const double hy, const char metodo);
+
+int main (int argc, char **argv) {
+
+    Inicia_Programa();
+
+    Checa_Num_Parametros( argc);
+
+    const int nx = atoi( argv[1]);
+    const int ny = atoi( argv[2]);
+    const double hx = ( double) MAX_X / nx;
+    const double hy = ( double) MAX_Y / ny;
+    const int nthreads = atoi( argv[3]);
+    const int iteracoes = atoi( argv[4]);
+    const char metodo = *argv[5];
+
+    Checa_Valor_Parametros( nx, ny, nthreads, iteracoes, metodo);
+
+    Imprime_Parametros(nx, ny, nthreads, iteracoes, metodo);
+
+    omp_set_num_threads(nthreads);
+
+    malha **Grade = Inicia_Grade( nx, ny, hx, hy);
+
+    //Imprime_Grade( Grade, nx, ny);
+
+    Executa_Metodo_Escolhido( Grade, nx, ny, iteracoes, hx, hy, metodo);
+
+    Finaliza_Programa();
+
+    return (0);
+}
+
 void Executa_Metodo_Escolhido(malha **Grade, const int nx, const int ny, const int iteracoes, const double hx, const double hy, const char metodo) {
 
     double start_time, run_time;
@@ -49,39 +82,4 @@ void Executa_Metodo_Escolhido(malha **Grade, const int nx, const int ny, const i
     //Imprime_Grade( Grade_Solucao, nx, ny);
 
     Escreve_Grade_Arquivo( Grade_Solucao, nx, ny);
-
-}
-
-
-int main (int argc, char **argv)
-{
-
-    Inicia_Programa();
-
-    Checa_Num_Parametros( argc);
-
-    const int nx = atoi( argv[1]);
-    const int ny = atoi( argv[2]);
-    const double hx = ( double) MAX_X / nx;
-    const double hy = ( double) MAX_Y / ny;
-    const int nthreads = atoi( argv[3]);
-    const int iteracoes = atoi( argv[4]);
-    const char metodo = *argv[5];
-
-    Checa_Valor_Parametros( nx, ny, nthreads, iteracoes, metodo);
-
-    Imprime_Parametros(nx, ny, nthreads, iteracoes, metodo);
-
-    omp_set_num_threads(nthreads);
-
-    malha **Grade = Inicia_Grade( nx, ny, hx, hy);
-
-    //Imprime_Grade( Grade, nx, ny);
-
-    Executa_Metodo_Escolhido( Grade, nx, ny, iteracoes, hx, hy, metodo);
-
-    Finaliza_Programa();
-
-    return (0);
-
 }
