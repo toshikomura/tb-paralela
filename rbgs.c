@@ -21,13 +21,9 @@ typedef struct malha {
 void Inicia_Programa() {
     printf("\n\n <=== Inciando Programa ===>\n\n");
 }
-
-
 void Finaliza_Programa() {
     printf("\n\n <=== Finalizando Programa ===>\n\n");
 }
-
-
 void Checa_Num_Parametros(const int num_Parametros) {
 
     if (num_Parametros != NUM_CORRETO_PARAMETROS)
@@ -39,14 +35,12 @@ void Checa_Num_Parametros(const int num_Parametros) {
         printf("'nx' e 'ny': número de intervalos na grade de discretização nas direções X e Y, respectivamente.\n");
         printf("t: número de threads\n");
         printf("c: número de iterações a serem executadas\n");
-        printf("j ou c: utilizar o método de Jacobi (j) ou Red-black Gaussian (g)\n\n");
+        printf("j ou g: utilizar o método de Jacobi (j) ou Red-black Gaussian (g)\n\n");
         Finaliza_Programa();
         exit(-1);
     }
 
 }
-
-
 void Checa_Valor_Parametros( const int nx, const int ny, const int nthreads, const int iteracoes, const char metodo) {
 
     if ( nx < 1) {
@@ -80,8 +74,6 @@ void Checa_Valor_Parametros( const int nx, const int ny, const int nthreads, con
         exit(-1);
     }
 }
-
-
 void Imprime_Parametros(const int nx, const int ny, const int nthreads, const int iteracoes, const char metodo) {
     printf("\nImprimindo parametros\n");
     printf("nx = %d ny %d\n", nx, ny);
