@@ -11,8 +11,6 @@ malha **Inicia_Grade( const int nx, const int ny, const double hx, const double 
 
     //printf("%d/%d %f %d/%d %f\n", nx, MAX_X, hx, ny, MAX_Y, hy);
 
-    double valor_x = 0;
-    double valor_y = 0;
     int i, j;
 
     malha **Grade = malloc( sizeof(malha) * ( nx + 1));
@@ -20,30 +18,14 @@ malha **Inicia_Grade( const int nx, const int ny, const double hx, const double 
         Grade[i] = malloc( sizeof(malha) * ( ny + 1));
     }
 
-    for (i = 0; i <= nx; i++) {
-        for (j = 0; j <= ny; j++) {
-            Grade[ i][ j].x = valor_x;
-            Grade[ i][ j].y = valor_y;
-            Grade[ i][ j].valor = 0;
-            // atualiza valor de y
-            valor_y = valor_y + hy;
+    #pragma omp parallel for shared( Grade) private( i, j)
+        for (i = 0; i <= nx; i++) {
+            for (j = 0; j <= ny; j++) {
+                Grade[ i][ j].x = i * hx;
+                Grade[ i][ j].y = j * hy;
+                Grade[ i][ j].valor = 0;
+            }
         }
-
-        // atualiza valor de x
-        valor_x = valor_x + hx;
-        valor_y = 0;
-    }
-
-    // Por causa do arredondamento do valor das bordas
-    // causado pelos intervalos, foi necessário inserir
-    // os valores máximos no braço
-    /*
-    for (i = 0; i <= nx; i++)
-        Grade[ i][ ny].y = MAX_Y;
-
-    for (j = 0; j <= ny; j++)
-        Grade[ nx][ j].x = MAX_X;
-    */
 
     return ( Grade);
 }
@@ -178,5 +160,3 @@ malha **Solucao_SL_Red_Black_Gauss_Seidel( malha **Grade, const int nx, const in
     return ( Grade);
 
 }
-
-
