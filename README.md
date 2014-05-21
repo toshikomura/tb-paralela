@@ -32,11 +32,14 @@ Com o programa gnuplot instalado executar:
 
 $ gnuplot
 
-Dpois o gnuplot aberto executar:
+Depois com o gnuplot aberto executar:
 
-gnuplot> set terminal xterm
+gnuplot> set term png
+Terminal type set to 'png'
+Options are 'nocrop font "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf,12" fontscale 1.0 size 640,480 '
+gnuplot> set dgrid3d 30,30
 gnuplot> set output "solution.png"
-gnuplot> splot "solution.txt"
+gnuplot> splot "solution.txt" u 1:2:3 with lines
 
 
 Como ver o plano cartesiano:
