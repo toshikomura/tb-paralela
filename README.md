@@ -52,3 +52,21 @@ Como Limpar:
 Basta entrar no diretório onde se localiza o Makefile e executar:
 
 $ make clean
+
+
+Consultar Threads da Máquina
+
+Executar:
+
+$ likwid-pin -p
+
+
+Pinar Threads
+
+Executar:
+
+$ likwid-pin -c N:31,32,33,34  ./rbgs 2049 2049 4 2000 g
+ou
+$ likwid-pin -c N:31-34  ./rbgs 2049 2049 4 2000 g
+ou
+$ likwid-pin -c 31-34  ./rbgs 2049 2049 4 2000 g
