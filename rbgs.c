@@ -12,7 +12,7 @@ void Executa_Metodo_Escolhido(const int nx, const int ny, const int iteracoes, c
 
 int main (int argc, char **argv) {
 
-    Inicia_Programa();
+ //   Inicia_Programa();
 
     Checa_Num_Parametros( argc);
 
@@ -26,7 +26,7 @@ int main (int argc, char **argv) {
 
     Checa_Valor_Parametros( nx, ny, nthreads, iteracoes, metodo);
 
-    Imprime_Parametros(nx, ny, nthreads, iteracoes, metodo);
+//    Imprime_Parametros(nx, ny, nthreads, iteracoes, metodo);
 
     omp_set_num_threads(nthreads);
 
@@ -34,7 +34,7 @@ int main (int argc, char **argv) {
 
     Executa_Metodo_Escolhido( nx, ny, iteracoes, hx, hy, metodo);
 
-    Finaliza_Programa();
+//    Finaliza_Programa();
 
     return (0);
 }
@@ -46,10 +46,10 @@ void Executa_Metodo_Escolhido(const int nx, const int ny, const int iteracoes, c
     malha **Grade;
     malha **Grade_Solucao;
 
-    #pragma omp parallel
-    {
-            printf("Eu sou a thread nº%d\n", omp_get_thread_num());
-    }
+//    #pragma omp parallel
+//    {
+//            printf("Eu sou a thread nº%d\n", omp_get_thread_num());
+//    }
 
     switch ( metodo) {
         case 'j' :
@@ -78,9 +78,9 @@ void Executa_Metodo_Escolhido(const int nx, const int ny, const int iteracoes, c
             Grade_Solucao = Inicia_Grade( nx, ny, hx, hy);
     }
 
-    printf("\n\nExecutou em %lf segundos\n\n", run_time);
+    printf("%lf\n", run_time);
 
     //Imprime_Grade( Grade_Solucao, nx, ny);
 
-    Escreve_Grade_Arquivo( Grade_Solucao, nx, ny);
+    //Escreve_Grade_Arquivo( Grade_Solucao, nx, ny);
 }
