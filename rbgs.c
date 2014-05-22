@@ -8,7 +8,7 @@
 #include "io.h"
 #include "matematica.h"
 
-void Executa_Metodo_Escolhido(malha **Grade, const int nx, const int ny, const int iteracoes, const double hx, const double hy, const char metodo);
+void Executa_Metodo_Escolhido(const int nx, const int ny, const int iteracoes, const double hx, const double hy, const char metodo);
 
 int main (int argc, char **argv) {
 
@@ -30,21 +30,20 @@ int main (int argc, char **argv) {
 
     omp_set_num_threads(nthreads);
 
-    malha **Grade = Inicia_Grade( nx, ny, hx, hy);
-
     //Imprime_Grade( Grade, nx, ny);
 
-    Executa_Metodo_Escolhido( Grade, nx, ny, iteracoes, hx, hy, metodo);
+    Executa_Metodo_Escolhido( nx, ny, iteracoes, hx, hy, metodo);
 
     Finaliza_Programa();
 
     return (0);
 }
 
-void Executa_Metodo_Escolhido(malha **Grade, const int nx, const int ny, const int iteracoes, const double hx, const double hy, const char metodo) {
+void Executa_Metodo_Escolhido(const int nx, const int ny, const int iteracoes, const double hx, const double hy, const char metodo) {
 
     double start_time, run_time=0;
 
+    malha **Grade;
     malha **Grade_Solucao;
 
     #pragma omp parallel
@@ -57,6 +56,7 @@ void Executa_Metodo_Escolhido(malha **Grade, const int nx, const int ny, const i
         case 'J' :
             start_time = omp_get_wtime();
 
+            Grade = Inicia_Grade( nx, ny, hx, hy);
             Grade_Solucao = Solucao_SL_Jacobbi( Grade, nx, ny, iteracoes, hx, hy);
 
             run_time = omp_get_wtime() - start_time;
@@ -67,6 +67,7 @@ void Executa_Metodo_Escolhido(malha **Grade, const int nx, const int ny, const i
         case 'G' :
             start_time = omp_get_wtime();
 
+            Grade = Inicia_Grade( nx, ny, hx, hy);
             Grade_Solucao = Solucao_SL_Red_Black_Gauss_Seidel( Grade, nx, ny, iteracoes, hx, hy);
 
             run_time = omp_get_wtime() - start_time;
