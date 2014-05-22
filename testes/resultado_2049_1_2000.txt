@@ -1,0 +1,20 @@
+
+
+ <=== Inciando Programa ===>
+
+
+Imprimindo parametros
+nx = 2049 ny 2049
+threads = 1 iterações = 2000
+método = Red-Black Gaussian
+
+
+Eu sou a thread nº0
+
+
+Executou em 608.941553 segundos
+
+
+
+ <=== Finalizando Programa ===>
+
