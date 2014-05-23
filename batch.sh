@@ -18,8 +18,10 @@ iteracoes=$2
 
 for cores in 1 2 4 8 ; do
 	for num in $(seq ${iteracoes}) ; do
-		./rbgs ${grade} ${grade} ${cores} 2000 g >> pass${grade}x${cores}.txt
+		likwid-pin -q -c 0-${cores} ./rbgs ${grade} ${grade} ${cores} 2000 g >> pass${grade}x${cores}.txt
 	done
+	echo ${cores}
+	./media pass${grade}x${cores}.txt
 	./media pass${grade}x${cores}.txt >> testes/medias${grade}x${cores}.txt
 	rm -f pass${grade}x${cores}.txt
 done
