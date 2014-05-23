@@ -1,6 +1,7 @@
-all: rbgs
+all: rbgs media
 rbgs: io.o matematica.o definicoes.h rbgs.c
 	gcc rbgs.c matematica.o io.o -o rbgs -lm -O3 -Wall -Winline -Wshadow -fopenmp
+
 
 io.o: io.c matematica.o definicoes.h
 	gcc -c io.c -o io.o -lm -O3 -Wall -Winline -Wshadow -fopenmp
@@ -10,6 +11,9 @@ matematica.o: matematica.c definicoes.h
 
 exec:
 	./rbgs 2049 2049 8 5000 j
+
+media: media.c
+	gcc media.c -o media
 
 exectest:
 	./rbgs 32 32 1 2000 g > testes/resultado_32_1_2000.txt
@@ -38,7 +42,7 @@ exectest:
 	./rbgs 2049 2049 6 2000 g > testes/resultado_2049_6_2000.txt
 
 clean:
-	rm -f rbgs
+	rm -f rbgs media
 	rm -rf *.o
 	rm -f *.png
 	rm -f solution.txt
