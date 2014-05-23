@@ -10,6 +10,7 @@
 typedef struct malha {
     double x;
     double y;
+    double fxy;
     double valor;
 } malha;
 
