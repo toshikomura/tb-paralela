@@ -23,7 +23,7 @@ int main(int argc, char **argv){
 
 	acumulador = acumulador/i;
 
-	printf ("Media: %lf\n",i,acumulador);
+	printf ("Media: %lf\n",acumulador);
 	return 0;
 }
 
