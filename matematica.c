@@ -162,3 +162,36 @@ inline malha **Solucao_SL_Red_Black_Gauss_Seidel( malha **Grade, const int nx, c
     return ( Grade);
 
 }
+
+
+double residuo( malha **grade, int nx, int ny, double hx, double hy){
+	 double residuo=0;
+	 int i,j;
+	 #pragma omp parallel
+	 {
+
+		double fator;
+		double inv_hx2, inv_hy2; // o inverso de hx^2 e hy^2
+		fator=(2/(hx*hx))+(2/(hy*hy))+(2*M_PI*2*M_PI);
+		inv_hx2=1/(hx*hx);
+		inv_hy2=1/(hy*hy);
+		double my_residue=0;
+		double multiplicando;
+		#pragma omp for private(j)
+		for(i=1;i<ny;i++){
+			for(j=1;j<nx;j++){
+				printf ("%d, %d \n", i, j);
+				multiplicando=abs(grade[i][j].fxy+
+							  inv_hx2*(grade[i][j-1].valor+grade[i][j+1].valor)+
+							  inv_hy2*(grade[1-i][j].valor+grade[i+1][j].valor)-
+							  (fator*grade[i][j].valor));
+			    my_residue+=multiplicando*multiplicando;
+			}
+		}
+		#pragma omp critical
+		{
+				residuo+=my_residue;
+		}
+	}
+	return sqrt(residuo);
+}

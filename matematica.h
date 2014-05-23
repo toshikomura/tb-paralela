@@ -11,5 +11,5 @@ void Inverte_Grade( malha ***End_Grade, malha ***End_Grade_Solucao);
 void Copia_Grade( malha **Grade_Origem, malha **Grade_Dest, const int nx, const int ny);
 malha **Solucao_SL_Jacobbi( malha **Grade, const int nx, const int ny, const int iteracoes, const double hx, const double hy);
 malha **Solucao_SL_Red_Black_Gauss_Seidel( malha **Grade, const int nx, const int ny, const int iteracoes, const double hx, const double hy);
-
+double residuo( malha **Grade, int nx, int ny, double hx, double hy);
 #endif
