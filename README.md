@@ -70,3 +70,30 @@ ou
 $ likwid-pin -c N:31-34  ./rbgs 2049 2049 4 2000 g
 ou
 $ likwid-pin -c 31-34  ./rbgs 2049 2049 4 2000 g
+
+
+Como utilizar o comando shell "screen"
+
+Executar:
+
+$ screen
+
+Dar um enter para abrir o novo terminal
+Executar comandos desejados
+Para sair e deixar os comandos executando
+
+Apertar:
+
+Ctrl + a + d
+
+Para verificar quais terminais estão rodando
+
+Executar:
+
+$ screen -r
+
+Para entrar no terminal desejado
+
+Executar
+
+$ screen -r (número da tela)
