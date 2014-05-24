@@ -82,9 +82,9 @@ void Imprime_Parametros(const int nx, const int ny, const int nthreads, const in
     }
     printf("\n\n");
 }
-void Escreve_Grade_Arquivo( malha **Grade_Solucao, const int nx, const int ny) {
+void Escreve_Grade_Arquivo( malha *Grade_Solucao, const int nx, const int ny) {
 
-    int i, j;
+    int i, j, pos;
     FILE *f_Solucao;
 
     f_Solucao = fopen("solution.txt", "w+");
@@ -95,22 +95,24 @@ void Escreve_Grade_Arquivo( malha **Grade_Solucao, const int nx, const int ny) {
 
     for (i = 0; i <= nx; i++) {
         for (j = 0; j <= ny; j++) {
-            fprintf( f_Solucao, "%f %f %f\n", Grade_Solucao[ i][ j].x, Grade_Solucao[ i][ j].y, Grade_Solucao[ i][ j].valor);
+            pos = ( i * ny) + j;
+            fprintf( f_Solucao, "%f %f %f\n", Grade_Solucao[ pos].x, Grade_Solucao[ pos].y, Grade_Solucao[ pos].valor);
         }
     }
 
     fclose( f_Solucao);
 }
-void Imprime_Grade( malha **Grade, const int nx, const int ny) {
+void Imprime_Grade( malha *Grade, const int nx, const int ny) {
 
-    int i, j;
+    int i, j, pos;
 
     for (i = 0; i <= nx; i++) {
 //        printf("x = %f -|", Grade[ i][ 0].x);
         for (j = 0; j <= ny; j++) {
+            pos = ( i * ny) + j;
 //            printf("| %Lf ", Grade[ i][ j].x);
 //            printf("%Lf ", Grade[ i][ j].y);
-            printf("| %e |", Grade[ i][ j].valor);
+            printf("| %e |", Grade[ pos].valor);
         }
         printf("\n");
     }

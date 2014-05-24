@@ -9,6 +9,8 @@
 #include "matematica.h"
 
 void Executa_Metodo_Escolhido(const int nx, const int ny, const int iteracoes, const double hx, const double hy, const char metodo);
+malha *Junta_Grades( malha *Grade_Red, malha *Grade_Black, const int nx, const int ny, const double hx, const double hy);
+
 
 int main (int argc, char **argv) {
 
@@ -43,8 +45,10 @@ void Executa_Metodo_Escolhido(const int nx, const int ny, const int iteracoes, c
 
     double start_time, run_time=0;
 
-    malha **Grade;
-    malha **Grade_Solucao;
+    malha *Grade;
+    malha *Grade_Solucao;
+//    malha *Grade_Red;
+//    malha *Grade_Black;
 
 //    #pragma omp parallel
 //    {
@@ -67,10 +71,16 @@ void Executa_Metodo_Escolhido(const int nx, const int ny, const int iteracoes, c
         case 'G' :
             start_time = omp_get_wtime();
 
+//            Grade_Red = Inicia_Grade( nx / 2, ny / 2, hx, hy);
+//            Grade_Black = Inicia_Grade( nx / 2, ny / 2, hx, hy);
+
             Grade = Inicia_Grade( nx, ny, hx, hy);
+
             Grade_Solucao = Solucao_SL_Red_Black_Gauss_Seidel( Grade, nx, ny, iteracoes, hx, hy);
 
             run_time = omp_get_wtime() - start_time;
+
+//            Grade_Solucao = Junta_Grades( Grade_Red, Grade_Black, nx, ny, hx, hy);
 
             break;
 
@@ -83,9 +93,32 @@ void Executa_Metodo_Escolhido(const int nx, const int ny, const int iteracoes, c
 	//printf("residuo: %lf\n", residuo( Grade_Solucao, nx, ny, hx, hy) ); // seg fault?
 
 
-
-
     //Imprime_Grade( Grade_Solucao, nx, ny);
 
-    //Escreve_Grade_Arquivo( Grade_Solucao, nx, ny);
+    Escreve_Grade_Arquivo( Grade_Solucao, nx, ny);
+}
+
+
+malha *Junta_Grades( malha *Grade_Red, malha *Grade_Black, const int nx, const int ny, const double hx, const double hy) {
+
+    int i, j;
+    malha *Grade = Inicia_Grade( nx, ny, hx, hy);
+
+    #pragma omp parallel for shared( Grade) firstprivate( Grade_Red) private( i, j)
+        for (i = 0; i <= nx; i++) {
+            for (j = 0; j <= ny; j = j + 2) {
+                int pos = ( i * ny) + j;
+                Grade[ pos].valor = Grade_Red[pos].valor;
+            }
+        }
+
+    #pragma omp parallel for shared( Grade) firstprivate( Grade_Black) private( i, j)
+        for (i = 0; i <= nx; i++) {
+            for (j = 1; j <= ny; j = j + 2) {
+                int pos = ( i * ny) + j;
+                Grade[ pos].valor = Grade_Black[pos].valor;
+            }
+        }
+
+    return ( Grade);
 }
