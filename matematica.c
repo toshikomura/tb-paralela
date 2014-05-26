@@ -37,12 +37,13 @@ inline double Calcula_Uxy( malha **Grade, const int nx, const int ny, int i, int
     if ( i == 0 || j == 0 || i == ny)
         return ( (double) 0);
 
-    double stencil_Central = (1 / ( 2 / Quadrado( hx) + ( 2 / Quadrado( hy) ))) + Quadrado( K);
+    // printf( "-%lf\n", Grade[ i][ j].fxy);
+    double stencil_Central = ( 2 / Quadrado( hx) + ( 2 / Quadrado( hy) )) + Quadrado( K);
     // double fxy = Calcula_Fxy( Grade[ i][ j].x, Grade[ i][ j].y)
     double stencil_Desloc_X = (1 / ( 2 / Quadrado( hx))) * ( Grade[ i - 1][ j].valor + Grade[ i + 1][ j].valor);
     double stencil_Desloc_Y = (1 / ( 2 / Quadrado( hy))) * ( Grade[ i][ j - 1].valor + Grade[ i][ j + 1].valor);
-
-    return ( (double) ( stencil_Central * ( Grade[ i][ j].fxy + stencil_Desloc_X + stencil_Desloc_Y)));
+    // printf("%lf\n", ( (double) ( stencil_Central * ( Grade[ i][ j].fxy + stencil_Desloc_X + stencil_Desloc_Y))));
+    return ( (double) ( ( Grade[ i][ j].fxy + stencil_Desloc_X + stencil_Desloc_Y) / stencil_Central));
 
 }
 inline malha **Inicia_Grade( const int nx, const int ny, const double hx, const double hy) {
@@ -65,6 +66,8 @@ inline malha **Inicia_Grade( const int nx, const int ny, const double hx, const 
                 Grade[ i][ j].valor = 0;
             }
         }
+
+    // Imprime_Grade( Grade, nx, ny);
 
     return ( Grade);
 }
@@ -156,8 +159,8 @@ inline malha **Solucao_SL_Red_Black_Gauss_Seidel( malha **Grade, const int nx, c
                     }
                 }
             }
-        printf("\nresiduo: %lf\n", residuo( Grade, nx, ny, hx, hy) );
-        Imprime_Grade( Grade, nx, ny);
+        // printf("\nresiduo: %lf\n", residuo( Grade, nx, ny, hx, hy) );
+        // Imprime_Grade( Grade, nx, ny);
         //Imprime_Grade( Grade_Solucao, nx, ny);
     }
 

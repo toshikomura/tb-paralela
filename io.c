@@ -83,7 +83,7 @@ void Imprime_Parametros(const int nx, const int ny, const int nthreads, const in
     printf("\n\n");
 }
 void Escreve_Grade_Arquivo( malha **Grade_Solucao, const int nx, const int ny) {
-
+    // printf( "%d %d\n", nx, ny);
     int i, j;
     FILE *f_Solucao;
 
