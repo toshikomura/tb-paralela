@@ -37,13 +37,15 @@ inline double Calcula_Uxy( malha **Grade, const int nx, const int ny, int i, int
     if ( i == 0 || j == 0 || i == ny)
         return ( (double) 0);
 
-    // printf( "-%lf\n", Grade[ i][ j].fxy);
-    double stencil_Central = ( 2 / Quadrado( hx) + ( 2 / Quadrado( hy) )) + Quadrado( K);
+
+    double stencil_Central = (( 2 / Quadrado( hx) + ( 2 / Quadrado( hy) )) + Quadrado(K));
+
+    // double stencil_Central = ( 2 / Quadrado( hx) + ( 2 / Quadrado( hy) )) + Quadrado( K);
     // double fxy = Calcula_Fxy( Grade[ i][ j].x, Grade[ i][ j].y)
     double stencil_Desloc_X = (1 / ( 2 / Quadrado( hx))) * ( Grade[ i - 1][ j].valor + Grade[ i + 1][ j].valor);
     double stencil_Desloc_Y = (1 / ( 2 / Quadrado( hy))) * ( Grade[ i][ j - 1].valor + Grade[ i][ j + 1].valor);
-    // printf("%lf\n", ( (double) ( stencil_Central * ( Grade[ i][ j].fxy + stencil_Desloc_X + stencil_Desloc_Y))));
-    return ( (double) ( ( Grade[ i][ j].fxy + stencil_Desloc_X + stencil_Desloc_Y) / stencil_Central));
+
+    return ( ( Grade[ i][ j].fxy + stencil_Desloc_X + stencil_Desloc_Y) / stencil_Central);
 
 }
 inline malha **Inicia_Grade( const int nx, const int ny, const double hx, const double hy) {
@@ -128,7 +130,7 @@ inline malha **Solucao_SL_Red_Black_Gauss_Seidel( malha **Grade, const int nx, c
     // faz todas as iterações
     for ( n_Iteracao = 1; n_Iteracao <= iteracoes; n_Iteracao++) {
 
-        #pragma omp parallel for shared( Grade) private( i, j)
+//        #pragma omp parallel for shared( Grade) private( i, j)
             // percorre a grade Red
             for ( i = 0; i <= nx; i++) {
                 // se i é par
@@ -144,7 +146,7 @@ inline malha **Solucao_SL_Red_Black_Gauss_Seidel( malha **Grade, const int nx, c
                 }
             }
 
-        #pragma omp parallel for shared( Grade) private( i, j)
+//        #pragma omp parallel for shared( Grade) private( i, j)
             // percorre a grade Black
             for ( i = 0; i <= nx; i++) {
                 // se i é par
