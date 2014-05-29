@@ -1,0 +1,9 @@
+com calculo
+./rbgs 1025 1025 1 2000 g
+199.790407
+com armazenamento
+./rbgs 1025 1025 1 2000 g
+51.070548
+com inline
+./rbgs 1025 1025 1 2000 g
+50.215015
