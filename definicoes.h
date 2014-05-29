@@ -3,7 +3,7 @@
 
 #define MAX_X 2.0
 #define MAX_Y 1.0
-#define PI 3.14
+#define PI M_PI
 #define K 2*PI
 #define NUM_CORRETO_PARAMETROS 6
 
