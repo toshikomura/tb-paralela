@@ -15,14 +15,14 @@ inline double Calcula_Fxy( double x, double y) {
 
 //    printf("x %f y %f r %f\n", x, y, ( 4 * Quadrado( PI) * sin( 2 * PI * x) * sinh( 2 * PI * y)));
 
-    return ( 4 * QUAD_PI * sin( 2 * PI * x) * sinh( 2 * PI * y));
+    return ( M4QUAD_PI * sin( M2PI * x) * sinh( M2PI * y));
 
 }
 inline double Calcula_Fronteira_Topo( double x) {
 
 //    printf("\n\nTopo x %f r %f\n\n", x, ( sin( 2 * PI * x) * sinh( 2 * PI)));
 
-    return ( sin( 2 * PI * x) * sinh( 2 * PI));
+    return ( sin( M2PI * x) * sinh( M2PI));
 
 }
 inline double Calcula_Uxy( malha **Grade, const int nx, const int ny, int i, int j, const double stencil_Central, const double quad_hx, const double quad_hy) {
