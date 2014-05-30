@@ -6,7 +6,7 @@ malha **Inicia_Grade( const int nx, const int ny, const double hx, const double 
 double Quadrado( double n);
 double Calcula_Fxy( double x, double y);
 double Calcula_Fronteira_Topo( double x);
-double Calcula_Uxy( malha **Grade, const int nx, const int ny, int i, int j, const double hx, const double hy);
+double Calcula_Uxy( malha **Grade, const int nx, const int ny, int i, int j, const double stencil_Central, const double quad_hx, const double quad_hy);
 void Inverte_Grade( malha ***End_Grade, malha ***End_Grade_Solucao);
 void Copia_Grade( malha **Grade_Origem, malha **Grade_Dest, const int nx, const int ny);
 malha **Solucao_SL_Jacobbi( malha **Grade, const int nx, const int ny, const int iteracoes, const double hx, const double hy);
