@@ -93,8 +93,8 @@ void Escreve_Grade_Arquivo( malha **Grade_Solucao, const int nx, const int ny) {
     fprintf( f_Solucao, "# f(x, y) = 4 * PI^2 * sin( 2 * PI * x) * sinh( 2 * PI * y)\n");
     fprintf( f_Solucao, "# x      y        valor\n\n");
 
-    for (i = 0; i <= nx; i++) {
-        for (j = 0; j <= ny; j++) {
+    for (i = 0; i <= ny; i++) {
+        for (j = 0; j <= nx; j++) {
             fprintf( f_Solucao, "%f %f %f\n", Grade_Solucao[ i][ j].x, Grade_Solucao[ i][ j].y, Grade_Solucao[ i][ j].valor);
         }
     }
@@ -105,12 +105,12 @@ void Imprime_Grade( malha **Grade, const int nx, const int ny) {
 
     int i, j;
 
-    for (i = 0; i <= nx; i++) {
+    for (i = 0; i <= ny; i++) {
 //        printf("x = %f -|", Grade[ i][ 0].x);
-        for (j = 0; j <= ny; j++) {
+        for (j = 0; j <= nx; j++) {
 //            printf("| %Lf ", Grade[ i][ j].x);
 //            printf("%Lf ", Grade[ i][ j].y);
-            printf("| %e |", Grade[ i][ j].valor);
+            printf("| %lf %lf %lf |", Grade[ i][ j].x, Grade[ i][ j].y, Grade[ i][ j].valor);
         }
         printf("\n");
     }
