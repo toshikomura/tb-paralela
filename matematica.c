@@ -15,7 +15,7 @@ inline double Calcula_Fxy( double x, double y) {
 
 //    printf("x %f y %f r %f\n", x, y, ( 4 * Quadrado( PI) * sin( 2 * PI * x) * sinh( 2 * PI * y)));
 
-    return ( 4 * Quadrado( PI) * sin( 2 * PI * x) * sinh( 2 * PI * y));
+    return ( 4 * QUAD_PI * sin( 2 * PI * x) * sinh( 2 * PI * y));
 
 }
 inline double Calcula_Fronteira_Topo( double x) {
@@ -25,27 +25,26 @@ inline double Calcula_Fronteira_Topo( double x) {
     return ( sin( 2 * PI * x) * sinh( 2 * PI));
 
 }
-inline double Calcula_Uxy( malha **Grade, const int nx, const int ny, int i, int j, const double hx, const double hy) {
+inline double Calcula_Uxy( malha **Grade, const int nx, const int ny, int i, int j, const double stencil_Central, const double quad_hx, const double quad_hy) {
+
 
    // Verifica se é fronteiras topo
-//    if ( Grade[ i][ j].y == MAX_Y)
-    if ( j == nx)
+    if ( i == ny)
         return ( Calcula_Fronteira_Topo( Grade[ i][ j].x));
 
     // Verifica se é outras fronteiras
-//  if ( Grade[ i][ j].x == MAX_X || Grade[ i][ j].x == 0 || Grade[ i][ j].y == 0 )
-    if ( i == 0 || j == 0 || i == ny)
+    if ( i == 0 || j == 0 || j == nx)
         return ( (double) 0);
 
+//                printf( "fxy %lf\n", Grade[ i][ j].fxy);
+//                printf( "x - 1 %lf x + 1 %lf\n", Grade[ i - 1][ j].valor, Grade[ i + 1][ j].valor);
+//                printf( "x %lf\n", (( Grade[ i - 1][ j].valor + Grade[ i + 1][ j].valor) / quad_hx));
+//                printf( "y - 1 %lf y + 1 %lf\n", Grade[ i][ j - 1].valor, Grade[ i][ j + 1].valor);
+//                printf( "y %lf\n", (( Grade[ i][ j - 1].valor + Grade[ i][ j + 1].valor) / quad_hy));
 
-    double stencil_Central = (( 2 / Quadrado( hx) + ( 2 / Quadrado( hy) )) + Quadrado( K));
-
-    // double stencil_Central = ( 2 / Quadrado( hx) + ( 2 / Quadrado( hy) )) + Quadrado( K);
-    // double fxy = Calcula_Fxy( Grade[ i][ j].x, Grade[ i][ j].y)
-    double stencil_Desloc_X = (1 / ( 2 / Quadrado( hx))) * ( Grade[ i - 1][ j].valor + Grade[ i + 1][ j].valor);
-    double stencil_Desloc_Y = (1 / ( 2 / Quadrado( hy))) * ( Grade[ i][ j - 1].valor + Grade[ i][ j + 1].valor);
-
-    return ( ( double) ( Grade[ i][ j].fxy + stencil_Desloc_X + stencil_Desloc_Y)/ stencil_Central);
+    return ( (Grade[ i][ j].fxy + (( Grade[ i - 1][ j].valor + Grade[ i + 1][ j].valor) / quad_hx) +
+            (( Grade[ i][ j -1].valor + Grade[ i][ j + 1].valor) / quad_hy)) /
+            ( stencil_Central));
 
 }
 inline malha **Inicia_Grade( const int nx, const int ny, const double hx, const double hy) {
@@ -54,16 +53,16 @@ inline malha **Inicia_Grade( const int nx, const int ny, const double hx, const 
 
     int i, j;
 
-    malha **Grade = malloc( sizeof(malha) * ( nx + 1));
-    for (i = 0; i <= nx; i++) {
-        Grade[i] = malloc( sizeof(malha) * ( ny + 1));
+    malha **Grade = malloc( sizeof(malha) * ( ny + 1));
+    for (i = 0; i <= ny; i++) {
+        Grade[i] = malloc( sizeof(malha) * ( nx + 1));
     }
 
     #pragma omp parallel for shared( Grade) private( i, j)
-        for (i = 0; i <= nx; i++) {
-            for (j = 0; j <= ny; j++) {
-                Grade[ i][ j].x = i * hx;
-                Grade[ i][ j].y = j * hy;
+        for (i = 0; i <= ny; i++) {
+            for (j = 0; j <= nx; j++) {
+                Grade[ i][ j].y = i * hy;
+                Grade[ i][ j].x = j * hx;
                 Grade[ i][ j].fxy = Calcula_Fxy( Grade[ i][ j].x, Grade[ i][ j].y);
                 Grade[ i][ j].valor = 0;
             }
@@ -85,8 +84,8 @@ inline void Copia_Grade( malha **Grade_Origem, malha **Grade_Dest, const int nx,
 
     int i, j;
 
-    for ( i = 0; i <= nx; i++) {
-        for ( j = 0; j <= ny; j++) {
+    for ( i = 0; i <= ny; i++) {
+        for ( j = 0; j <= nx; j++) {
             Grade_Dest[ i][ j].valor = Grade_Origem[ i][ j].valor;
         }
     }
@@ -98,15 +97,18 @@ inline malha **Solucao_SL_Jacobbi( malha **Grade, const int nx, const int ny, co
     malha **Grade_Solucao = Inicia_Grade( nx, ny, hx, hy);
 
     int i, j;
+    double quad_hx = Quadrado( hx);
+    double quad_hy = Quadrado( hy);
+	double stencil_Central = (( 2 / quad_hx) + ( 2/ quad_hy) + QUAD_K);
 
     // faz todas as iterações
     for ( n_Iteracao = 1; n_Iteracao <= iteracoes; n_Iteracao++) {
 
         #pragma omp parallel for shared( Grade, Grade_Solucao) private( i, j)
             // percorre a grade
-            for ( i = 0; i <= nx; i++) {
-                for ( j = 0; j <= ny; j++) {
-                    Grade_Solucao[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, hx, hy);
+            for ( i = 0; i <= ny; i++) {
+                for ( j = 0; j <= nx; j++) {
+                    Grade_Solucao[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, stencil_Central, quad_hx, quad_hy);
                 }
             }
 
@@ -126,44 +128,47 @@ inline malha **Solucao_SL_Red_Black_Gauss_Seidel( malha **Grade, const int nx, c
     int n_Iteracao;
 
     int i, j;
+    double quad_hx = Quadrado( hx);
+    double quad_hy = Quadrado( hy);
+	double stencil_Central = (( 2 / quad_hx) + ( 2/ quad_hy) + QUAD_K);
 
     // faz todas as iterações
     for ( n_Iteracao = 1; n_Iteracao <= iteracoes; n_Iteracao++) {
 
         #pragma omp parallel for shared( Grade) private( i, j)
             // percorre a grade Red
-            for ( i = 0; i <= nx; i++) {
+            for ( i = 0; i <= ny; i++) {
                 // se i é par
                 if ( i % 2 == 0) {
-                    for ( j = 0; j <= ny; j = j + 2) {
-                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, hx, hy);
+                    for ( j = 0; j <= nx; j = j + 2) {
+                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, stencil_Central, quad_hx, quad_hy);
                     }
                 }
                 else {
-                    for ( j = 1; j <= ny; j = j + 2) {
-                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, hx, hy);
+                    for ( j = 1; j <= nx; j = j + 2) {
+                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, stencil_Central, quad_hx, quad_hy);
                     }
                 }
             }
 
         #pragma omp parallel for shared( Grade) private( i, j)
             // percorre a grade Black
-            for ( i = 0; i <= nx; i++) {
+            for ( i = 0; i <= ny; i++) {
                 // se i é par
                 if ( i % 2 == 0) {
-                    for ( j = 1; j <= ny; j = j + 2) {
-                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, hx, hy);
+                    for ( j = 1; j <= nx; j = j + 2) {
+                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, stencil_Central, quad_hx, quad_hy);
                     }
                 }
                 else {
-                    for ( j = 0; j <= ny; j = j + 2) {
-                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, hx, hy);
+                    for ( j = 0; j <= nx; j = j + 2) {
+                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, stencil_Central, quad_hx, quad_hy);
                     }
                 }
             }
         // printf("\nresiduo: %lf\n", residuo( Grade, nx, ny, hx, hy) );
         // Imprime_Grade( Grade, nx, ny);
-        //Imprime_Grade( Grade_Solucao, nx, ny);
+        // Imprime_Grade( Grade_Solucao, nx, ny);
     }
 
     return ( Grade);
@@ -173,32 +178,22 @@ inline malha **Solucao_SL_Red_Black_Gauss_Seidel( malha **Grade, const int nx, c
 
 double residuo( malha **Grade, int nx, int ny, double hx, double hy){
 
-	 double valor_Residuo = 0;
-	 int i, j;
+    int i, j;
+    double quad_hx = Quadrado( hx);
+    double quad_hy = Quadrado( hy);
+	double stencil_Central = (( 2 / quad_hx) + ( 2/ quad_hy) + QUAD_K);
+	double meu_Residuo = 0;
 
-	 #pragma omp parallel
-	 {
+	#pragma omp parallel for private( i, j) reduction ( +: meu_Residuo)
+        for( i = 1; i < ny; i++){
+	        for( j = 1; j < nx; j++){
+                meu_Residuo += Quadrado( Grade[ i][ j].fxy +
+                                    (( Grade[ i - 1][ j].valor + Grade[ i + 1][ j].valor) / quad_hx) +
+                                    (( Grade[ i][ j -1].valor + Grade[ i][ j + 1].valor) / quad_hy) -
+                                    ( stencil_Central * Grade[ i][ j].valor));
+            }
+        }
 
-		double stencil_Central = ( 2 / Quadrado( hx)) + ( 2/ Quadrado( hy)) + Quadrado( K);
-		double meu_Residuo = 0;
-		double multiplicando;
-
-		#pragma omp for private( i, j)
-		    for( i = 1; i < ny; i++){
-			    for( j = 1; j < nx; j++){
-                    double stencil_Desloc_X = (1 / ( 2 / Quadrado( hx))) * ( Grade[ i - 1][ j].valor + Grade[ i + 1][ j].valor);
-                    double stencil_Desloc_Y = (1 / ( 2 / Quadrado( hy))) * ( Grade[ i][ j - 1].valor + Grade[ i][ j + 1].valor);
-                    multiplicando = (( double) ( Grade[ i][ j].fxy + stencil_Desloc_X + stencil_Desloc_Y) - ( stencil_Central * Grade[ i][ j].valor) );
-			        meu_Residuo = meu_Residuo + Quadrado( multiplicando);
-			    }
-    		    #pragma omp critical
-	    	    {
-		            valor_Residuo += meu_Residuo;
-		        }
-		    }
-
-	}
-
-	return sqrt( valor_Residuo);
+	return sqrt( meu_Residuo);
 
 }
