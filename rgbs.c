@@ -78,9 +78,9 @@ void Executa_Metodo_Escolhido(const int nx, const int ny, const int iteracoes, c
             Grade_Solucao = Inicia_Grade( nx, ny, hx, hy);
     }
 
-    printf("%lf\n", run_time );
+    printf("Tempo %lf\n", run_time );
 
-	printf("Final residuo: %lf\n", residuo( Grade_Solucao, nx, ny, hx, hy) ); // seg fault?
+	printf("Residuo: %lf\n", residuo( Grade_Solucao, nx, ny, hx, hy) ); // seg fault?
 
     //Imprime_Grade( Grade_Solucao, nx, ny);
 
