@@ -1,13 +1,13 @@
 all: rgbs media
 rgbs: io.o matematica.o definicoes.h rgbs.c
-	gcc rgbs.c matematica.o io.o -o rgbs -lm -O3 -Wall -Winline -Wshadow -fopenmp
+	gcc rgbs.c matematica.o io.o -o rgbs -lm -Ofast -Wall -Winline -Wshadow -fopenmp
 
 
 io.o: io.c matematica.o definicoes.h
-	gcc -c io.c -o io.o -lm -O3 -Wall -Winline -Wshadow -fopenmp
+	gcc -c io.c -o io.o -lm -Ofast -Wall -Winline -Wshadow -fopenmp
 
 matematica.o: matematica.c definicoes.h
-	gcc -c matematica.c -o matematica.o -lm -O3 -Wall -Winline -Wshadow -fopenmp
+	gcc -c matematica.c -o matematica.o -lm -Ofast -Wall -Winline -Wshadow -fopenmp
 
 exec:
 	./rgbs 2049 2049 8 5000 j
