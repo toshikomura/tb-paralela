@@ -9,29 +9,21 @@
 #include "matematica.h"
 
 inline double Quadrado( double n) {
+
     return ( n * n);
+
 }
 inline double Calcula_Fxy( double x, double y) {
-
-//    printf("x %f y %f r %f\n", x, y, ( 4 * Quadrado( PI) * sin( 2 * PI * x) * sinh( 2 * PI * y)));
 
     return ( M4QUAD_PI * sin( M2PI * x) * sinh( M2PI * y));
 
 }
 double Calcula_Fronteira_Topo( double x) {
 
-//    printf("\n\nTopo x %f r %f\n\n", x, ( sin( 2 * PI * x) * sinh( 2 * PI)));
-
     return ( sin( M2PI * x) * sinh( M2PI));
 
 }
 inline double Calcula_Uxy( malha **Grade, const int nx, const int ny, int i, int j, const double stencil_Central, const double quad_hx, const double quad_hy) {
-
-//                printf( "fxy %lf\n", Grade[ i][ j].fxy);
-//                printf( "x - 1 %lf x + 1 %lf\n", Grade[ i - 1][ j].valor, Grade[ i + 1][ j].valor);
-//                printf( "x %lf\n", (( Grade[ i - 1][ j].valor + Grade[ i + 1][ j].valor) / quad_hx));
-//                printf( "y - 1 %lf y + 1 %lf\n", Grade[ i][ j - 1].valor, Grade[ i][ j + 1].valor);
-//                printf( "y %lf\n", (( Grade[ i][ j - 1].valor + Grade[ i][ j + 1].valor) / quad_hy));
 
     return ( (Grade[ i][ j].fxy + (( Grade[ i - 1][ j].valor + Grade[ i + 1][ j].valor) / quad_hx) +
             (( Grade[ i][ j -1].valor + Grade[ i][ j + 1].valor) / quad_hy)) /
@@ -39,8 +31,6 @@ inline double Calcula_Uxy( malha **Grade, const int nx, const int ny, int i, int
 
 }
 malha **Inicia_Grade( const int nx, const int ny, const double hx, const double hy) {
-
-    //printf("%d/%d %f %d/%d %f\n", nx, MAX_X, hx, ny, MAX_Y, hy);
 
     int i, j;
 
@@ -66,9 +56,8 @@ malha **Inicia_Grade( const int nx, const int ny, const double hx, const double 
             }
         }
 
-    // Imprime_Grade( Grade, nx, ny);
-
     return ( Grade);
+
 }
 void Inverte_Grade( malha ***End_Grade, malha ***End_Grade_Solucao) {
 
@@ -98,12 +87,9 @@ malha **Solucao_SL_Jacobbi( malha **Grade, const int nx, const int ny, const int
                 }
             }
 
-        //Imprime_Grade( Grade_Solucao, nx, ny);
-
         // Grade recebe a Grade Solução
         // e a Grade Solução fica livre para calcular uma nova solução
         Inverte_Grade( &Grade, &Grade_Solucao);
-        //Copia_Grade( Grade_Solucao, Grade, nx, ny);
     }
 
     return ( Grade);
@@ -152,9 +138,7 @@ malha **Solucao_SL_Red_Black_Gauss_Seidel( malha **Grade, const int nx, const in
                     }
                 }
             }
-        // printf("\nresiduo: %lf\n", residuo( Grade, nx, ny, hx, hy) );
-        // Imprime_Grade( Grade, nx, ny);
-        // Imprime_Grade( Grade_Solucao, nx, ny);
+
     }
 
     return ( Grade);
