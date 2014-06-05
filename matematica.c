@@ -42,13 +42,12 @@ malha **Inicia_Grade( const int nx, const int ny, const double hx, const double 
     #pragma omp parallel for shared( Grade) private( i, j)
         for (i = 0; i <= ny; i++) {
             for (j = 0; j <= nx; j++) {
-                Grade[ i][ j].y = i * hy;
-                Grade[ i][ j].x = j * hx;
-                Grade[ i][ j].fxy = Calcula_Fxy( Grade[ i][ j].x, Grade[ i][ j].y);
+
+                Grade[ i][ j].fxy = Calcula_Fxy( j * hx, i * hy);
 
                 // Verifica se é fronteiras topo
                 if ( i == ny)
-                    Grade[ i][ j].valor = Calcula_Fronteira_Topo( Grade[ i][ j].x);
+                    Grade[ i][ j].valor = Calcula_Fronteira_Topo( j * hx);
 
                 // Verifica se é outras fronteiras
                 if ( i == 0 || j == 0 || j == nx)

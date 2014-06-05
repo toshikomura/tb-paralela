@@ -12,8 +12,6 @@
 #define NUM_CORRETO_PARAMETROS 6
 
 typedef struct malha {
-    double x;
-    double y;
     double fxy;
     double valor;
 } malha;

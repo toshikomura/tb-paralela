@@ -86,5 +86,5 @@ void Executa_Metodo_Escolhido(const int nx, const int ny, const int iteracoes, c
 
     //Imprime_Grade( Grade_Solucao, nx, ny);
 
-    //Escreve_Grade_Arquivo( Grade_Solucao, nx, ny);
+    //Escreve_Grade_Arquivo( Grade_Solucao, nx, ny, hx, hy);
 }
