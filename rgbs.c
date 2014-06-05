@@ -14,7 +14,7 @@ int main (int argc, char **argv) {
 
  //   Inicia_Programa();
 
-    Checa_Num_Parametros( argc);
+//    Checa_Num_Parametros( argc);
 
     const int nx = atoi( argv[1]);
     const int ny = atoi( argv[2]);
@@ -24,7 +24,7 @@ int main (int argc, char **argv) {
     const int iteracoes = atoi( argv[4]);
     const char metodo = *argv[5];
 
-    Checa_Valor_Parametros( nx, ny, nthreads, iteracoes, metodo);
+//    Checa_Valor_Parametros( nx, ny, nthreads, iteracoes, metodo);
 
 //    Imprime_Parametros(nx, ny, nthreads, iteracoes, metodo);
 
@@ -78,11 +78,13 @@ void Executa_Metodo_Escolhido(const int nx, const int ny, const int iteracoes, c
             Grade_Solucao = Inicia_Grade( nx, ny, hx, hy);
     }
 
-    printf("Tempo %lf\n", run_time );
+    printf("%lf\n", run_time );
 
-	printf("Residuo: %lf\n", residuo( Grade_Solucao, nx, ny, hx, hy) ); // seg fault?
+    //printf("Tempo %lf\n", run_time );
+
+	//printf("Residuo: %lf\n", residuo( Grade_Solucao, nx, ny, hx, hy) ); // seg fault?
 
     //Imprime_Grade( Grade_Solucao, nx, ny);
 
-    Escreve_Grade_Arquivo( Grade_Solucao, nx, ny);
+    //Escreve_Grade_Arquivo( Grade_Solucao, nx, ny);
 }
