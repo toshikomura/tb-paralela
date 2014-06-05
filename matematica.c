@@ -109,32 +109,16 @@ malha **Solucao_SL_Red_Black_Gauss_Seidel( malha **Grade, const int nx, const in
         #pragma omp parallel for shared( Grade) private( i, j)
             // percorre a grade Red
             for ( i = 1; i < ny; i++) {
-                // se i é par
-                if ( i % 2 == 0) {
-                    for ( j = 0; j <= nx; j = j + 2) {
-                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, stencil_Central, quad_hx, quad_hy);
-                    }
-                }
-                else {
-                    for ( j = 1; j <= nx; j = j + 2) {
-                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, stencil_Central, quad_hx, quad_hy);
-                    }
+                for ( j = i % 2; j <= nx; j = j + 2) {
+                    Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, stencil_Central, quad_hx, quad_hy);
                 }
             }
 
         #pragma omp parallel for shared( Grade) private( i, j)
             // percorre a grade Black
             for ( i = 1; i < ny; i++) {
-                // se i é par
-                if ( i % 2 == 0) {
-                    for ( j = 1; j <= nx; j = j + 2) {
-                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, stencil_Central, quad_hx, quad_hy);
-                    }
-                }
-                else {
-                    for ( j = 0; j <= nx; j = j + 2) {
-                        Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, stencil_Central, quad_hx, quad_hy);
-                    }
+                for ( j = ( i + 1) % 2; j <= nx; j = j + 2) {
+                    Grade[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, stencil_Central, quad_hx, quad_hy);
                 }
             }
 
