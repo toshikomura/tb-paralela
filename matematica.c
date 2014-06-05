@@ -18,7 +18,7 @@ inline double Calcula_Fxy( double x, double y) {
     return ( M4QUAD_PI * sin( M2PI * x) * sinh( M2PI * y));
 
 }
-inline double Calcula_Fronteira_Topo( double x) {
+double Calcula_Fronteira_Topo( double x) {
 
 //    printf("\n\nTopo x %f r %f\n\n", x, ( sin( 2 * PI * x) * sinh( 2 * PI)));
 
@@ -47,7 +47,7 @@ inline double Calcula_Uxy( malha **Grade, const int nx, const int ny, int i, int
             ( stencil_Central));
 
 }
-inline malha **Inicia_Grade( const int nx, const int ny, const double hx, const double hy) {
+malha **Inicia_Grade( const int nx, const int ny, const double hx, const double hy) {
 
     //printf("%d/%d %f %d/%d %f\n", nx, MAX_X, hx, ny, MAX_Y, hy);
 
@@ -72,26 +72,14 @@ inline malha **Inicia_Grade( const int nx, const int ny, const double hx, const 
 
     return ( Grade);
 }
-
-inline void Inverte_Grade( malha ***End_Grade, malha ***End_Grade_Solucao) {
+void Inverte_Grade( malha ***End_Grade, malha ***End_Grade_Solucao) {
 
     malha **tmp = *End_Grade;
     *End_Grade = *End_Grade_Solucao;
     *End_Grade_Solucao = tmp;
 
 }
-inline void Copia_Grade( malha **Grade_Origem, malha **Grade_Dest, const int nx, const int ny) {
-
-    int i, j;
-
-    for ( i = 0; i <= ny; i++) {
-        for ( j = 0; j <= nx; j++) {
-            Grade_Dest[ i][ j].valor = Grade_Origem[ i][ j].valor;
-        }
-    }
-
-}
-inline malha **Solucao_SL_Jacobbi( malha **Grade, const int nx, const int ny, const int iteracoes, const double hx, const double hy) {
+malha **Solucao_SL_Jacobbi( malha **Grade, const int nx, const int ny, const int iteracoes, const double hx, const double hy) {
 
     int n_Iteracao;
     malha **Grade_Solucao = Inicia_Grade( nx, ny, hx, hy);
@@ -123,7 +111,7 @@ inline malha **Solucao_SL_Jacobbi( malha **Grade, const int nx, const int ny, co
     return ( Grade);
 
 }
-inline malha **Solucao_SL_Red_Black_Gauss_Seidel( malha **Grade, const int nx, const int ny, const int iteracoes, const double hx, const double hy) {
+malha **Solucao_SL_Red_Black_Gauss_Seidel( malha **Grade, const int nx, const int ny, const int iteracoes, const double hx, const double hy) {
 
     int n_Iteracao;
 
