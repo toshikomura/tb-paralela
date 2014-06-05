@@ -27,15 +27,6 @@ double Calcula_Fronteira_Topo( double x) {
 }
 inline double Calcula_Uxy( malha **Grade, const int nx, const int ny, int i, int j, const double stencil_Central, const double quad_hx, const double quad_hy) {
 
-
-   // Verifica se é fronteiras topo
-    if ( i == ny)
-        return ( Calcula_Fronteira_Topo( Grade[ i][ j].x));
-
-    // Verifica se é outras fronteiras
-    if ( i == 0 || j == 0 || j == nx)
-        return ( (double) 0);
-
 //                printf( "fxy %lf\n", Grade[ i][ j].fxy);
 //                printf( "x - 1 %lf x + 1 %lf\n", Grade[ i - 1][ j].valor, Grade[ i + 1][ j].valor);
 //                printf( "x %lf\n", (( Grade[ i - 1][ j].valor + Grade[ i + 1][ j].valor) / quad_hx));
@@ -64,7 +55,14 @@ malha **Inicia_Grade( const int nx, const int ny, const double hx, const double 
                 Grade[ i][ j].y = i * hy;
                 Grade[ i][ j].x = j * hx;
                 Grade[ i][ j].fxy = Calcula_Fxy( Grade[ i][ j].x, Grade[ i][ j].y);
-                Grade[ i][ j].valor = 0;
+
+                // Verifica se é fronteiras topo
+                if ( i == ny)
+                    Grade[ i][ j].valor = Calcula_Fronteira_Topo( Grade[ i][ j].x);
+
+                // Verifica se é outras fronteiras
+                if ( i == 0 || j == 0 || j == nx)
+                    Grade[ i][ j].valor = 0;
             }
         }
 
@@ -94,8 +92,8 @@ malha **Solucao_SL_Jacobbi( malha **Grade, const int nx, const int ny, const int
 
         #pragma omp parallel for shared( Grade, Grade_Solucao) private( i, j)
             // percorre a grade
-            for ( i = 0; i <= ny; i++) {
-                for ( j = 0; j <= nx; j++) {
+            for ( i = 1; i < ny; i++) {
+                for ( j = 1; j < nx; j++) {
                     Grade_Solucao[ i][ j].valor = Calcula_Uxy( Grade, nx, ny, i, j, stencil_Central, quad_hx, quad_hy);
                 }
             }
@@ -125,7 +123,7 @@ malha **Solucao_SL_Red_Black_Gauss_Seidel( malha **Grade, const int nx, const in
 
         #pragma omp parallel for shared( Grade) private( i, j)
             // percorre a grade Red
-            for ( i = 0; i <= ny; i++) {
+            for ( i = 1; i < ny; i++) {
                 // se i é par
                 if ( i % 2 == 0) {
                     for ( j = 0; j <= nx; j = j + 2) {
@@ -141,7 +139,7 @@ malha **Solucao_SL_Red_Black_Gauss_Seidel( malha **Grade, const int nx, const in
 
         #pragma omp parallel for shared( Grade) private( i, j)
             // percorre a grade Black
-            for ( i = 0; i <= ny; i++) {
+            for ( i = 1; i < ny; i++) {
                 // se i é par
                 if ( i % 2 == 0) {
                     for ( j = 1; j <= nx; j = j + 2) {
